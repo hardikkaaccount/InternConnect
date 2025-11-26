@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Auth.css'
 
 const HASURA_ENDPOINT = import.meta.env.VITE_HASURA_ENDPOINT
 const ADMIN_SECRET = import.meta.env.VITE_HASURA_ADMIN_SECRET
@@ -86,42 +85,45 @@ export default function Register() {
   }
 
   return (
-    <div className="auth-form">
+    <div className="form-container">
       <h2>Register</h2>
-      {error && <div className="error">Error: {error}</div>}
-      {success && <div className="success">{success}</div>}
+      {error && <div className="alert alert-error">Error: {error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
       <form onSubmit={registerUser}>
-        <div>
+        <div className="form-group">
           <input
             type="text"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="form-control"
           />
         </div>
-        <div>
+        <div className="form-group">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="form-control"
           />
         </div>
-        <div>
+        <div className="form-group">
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="form-control"
           />
         </div>
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className="btn btn-primary">
           {loading ? 'Registering...' : 'Register'}
         </button>
       </form>
-      <p>
+      <p className="text-center">
         Already have an account? 
-        <button className="link-button" onClick={() => navigate('/login')}>
+        <button className="btn btn-link" onClick={() => navigate('/login')}>
           Login
         </button>
       </p>

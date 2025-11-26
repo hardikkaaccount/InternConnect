@@ -1,0 +1,81 @@
+// 1
+
+graph TD
+    A[Login Page] -->|Successful Login| B[Groups Page]
+    B -->|Click on Group Item| C[Chatroom Page]
+    C -->|Send Message| C
+    
+    subgraph "1. Login Process"
+        A --> A1[Enter Credentials]
+        A1 --> A2[Submit to Hasura]
+        A2 --> A3{Authentication Success?}
+        A3 -->|Yes| B
+        A3 -->|No| A4[Show Error]
+        A4 --> A
+    end
+    
+    subgraph "2. Groups Display"
+        B --> B1[Fetch Chat Rooms from Hasura]
+        B1 --> B2[Display Group List]
+        B2 --> B3[Create New Group Form]
+        B3 --> B4[Add Group to Hasura]
+        B4 --> B1
+    end
+    
+    subgraph "3. Group Selection"
+        B -->|User Clicks Group| C
+    end
+    
+    subgraph "4. Chatroom Interaction"
+        C --> C1[Fetch Messages for Group]
+        C1 --> C2[Display Messages]
+        C2 --> C3[Message Input Form]
+        C3 --> C4[Send Message to Hasura]
+        C4 --> C1
+    end
+
+
+
+
+
+
+// 2
+
+graph TD
+    A[App Entry Point] --> B[BrowserRouter]
+    B --> C[App Component]
+    
+    C --> D[Route Management]
+    
+    D --> E[Public Routes]
+    E --> E1["/"]
+    E --> E2["/login"]
+    E --> E3["/register"]
+    
+    D --> F[Protected Routes]
+    F --> F1["/dashboard"]
+    F --> F2["/groups"]
+    F --> F3["/groups/:groupId"]
+    
+    E1 --> G[Login Component]
+    E2 --> G
+    E3 --> H[Register Component]
+    
+    F1 --> I[Dashboard Component]
+    F2 --> J[Groups Component]
+    F3 --> K[Chatbox Component]
+    
+    G -->|Successful Login| I
+    H -->|Successful Registration| G
+    
+    J -->|Click on Group Item| K
+    
+    I --> L[Fetch All Messages]
+    J --> M[Fetch All Groups]
+    K --> N[Fetch Group Messages]
+    
+    L --> O[Hasura GraphQL API]
+    M --> O
+    N --> O
+    
+    O --> P[PostgreSQL Database]

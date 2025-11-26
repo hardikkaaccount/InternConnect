@@ -94,11 +94,10 @@ function App() {
           )}
         />
         <Route
-          path="/groups"
+          path="/groups/:groupId"
           element={requireAuth(
-            <Groups
+            <Chatbox
               loggedInUser={loggedInUser}
-              setLoggedInUser={setLoggedInUser}
             />
           )}
         />

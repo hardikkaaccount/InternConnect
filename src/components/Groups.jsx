@@ -5,23 +5,21 @@ import './groups.css';
 const HASURA_ENDPOINT = import.meta.env.VITE_HASURA_ENDPOINT;
 const ADMIN_SECRET = import.meta.env.VITE_HASURA_ADMIN_SECRET;
 
-const Groups = () => {
+const Groups = ({ loggedInUser }) => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [newGroup, setNewGroup] = useState('');
   const [createdBy, setCreatedBy] = useState(null);
-  const [owner, setOwner] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('loggedInUser'));
-    if (user) {
-      setCreatedBy(user.id);
-      setOwner(user.name);
+    if (loggedInUser?.id) {
+      setCreatedBy(loggedInUser.id);
+    } else {
+      setCreatedBy(null);
     }
-  }, []);
- 
-  console.log('Created By:', createdBy);
+  }, [loggedInUser]);
+
   const navigate = useNavigate();
 
   const operationsDoc = `
@@ -29,13 +27,9 @@ const Groups = () => {
       chat_rooms {
         id
         name
-        creator {
-          name
-          id
-        }
+        created_by
       }
     }
-
     
     mutation AddClass($name: String!, $created_by: uuid!) {
       insert_chat_rooms(objects: { name: $name, created_by: $created_by }) {
@@ -85,10 +79,17 @@ const Groups = () => {
   }
 
   async function addGroup(name) {
-    if (!name.trim()) return;
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    if (!createdBy) {
+      setError('User not found, cannot create group');
+      console.log('createdBy is null/undefined, loggedInUser:', loggedInUser);
+      return;
+    }
 
     try {
-      const { data, errors } = await fetchGraphQL(operationsDoc, 'AddClass', { name, created_by: createdBy });
+      const { data, errors } = await fetchGraphQL(operationsDoc, 'AddClass', { name: trimmed, created_by: createdBy });
       if (errors && errors.length) {
         setError(errors[0].message);
         console.log('Error adding group:', errors[0].message);
@@ -105,7 +106,6 @@ const Groups = () => {
 
   useEffect(() => {
     fetchGroups();
-    console.log('Groups component mounted');
   }, []);
 
   return (
@@ -132,9 +132,7 @@ const Groups = () => {
             onClick={() => navigate(`/groups/${group.id}`)}
           >
             {group.name}
-            <span className="created-by">Created by: {group.creator?.name || 'Unknown'}</span>
-
-            
+            <span className="created-by">Created by: {group.created_by === createdBy ? 'You' : 'Someone else'}</span>
           </div>
         ))}
         {loading && <p>Loading...</p>}

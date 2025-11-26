@@ -68,7 +68,7 @@ export default function Login({ setLoggedInUser }) {
         const user = data.users[0];
         setLoggedInUser(user);
         // Navigate to dashboard
-        navigate('/dashboard');
+        navigate('/groups');
       }
     } catch (err) {
       setError(err.message);
